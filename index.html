@@ -7,9 +7,17 @@
         <style>
             .rr-embedded {
                 position: relative;
-                width: calc(100% - 2rem);
-                height: 450px;
+                width: 100%;
+                height: 400px;
                 margin: auto;
+            }
+
+            #game-container {
+                margin: 1rem;
+            }
+
+            #year-input {
+                width: 100%;
             }
             
             /* Hide unwanted parts of the UI */
@@ -20,14 +28,14 @@
             #jAROpen{display:none;}
 
             /* Undo extra CSS from running reality */
-            #year-input {
-                width: 300px;
-            }
-
             #hard-mode {
                 position: static;
                 left: auto;
-                visibility: visible;
+                visibility: unset;
+            }
+
+            .thumb {
+                display: none;
             }
         </style>
     </head>
@@ -61,9 +69,20 @@
             const today = new Date();
             const maxYear = today.getFullYear();
 
+            function formatYear(showSuffix, year) {
+                if (showSuffix) {
+                    return year < 0 ? `${Math.abs(year)} BC` : `${year} AD`;
+                }
+                else {
+                    return year;
+                }
+            }
+
             function changeToRandomYear() {
-                const mapElement = document.getElementById('rr-embedded');
-                mapElement.style.visibility = "hidden";
+                const loadingElement = document.getElementById("loading");
+                const gameElement = document.getElementById("game-container");
+                gameElement.style.visibility = "hidden";
+                loadingElement.style.visibility = "visible";
 
                 yearAnswer = Math.floor(Math.random() * (maxYear - minYear + 1)) + minYear;
 
@@ -73,34 +92,47 @@
 
                 rr.setDate(date);
 
-                mapElement.style.visibility = "visible";
+                // Wait for the UI to render
+                loadingElement.style.visibility = "hidden";
+                gameElement.style.visibility = "visible";
             }
 
-            function updateInputValues(inputElement) {
-                const minYearText = minYear < 0 ? `${Math.abs(minYear)} B.C.` : minYear;
-                const maxYearText = maxYear + (minYear < 0 ? " A.D." : "");
-
-                inputElement.placeholder = `Guess a year (${minYearText} to ${maxYearText})`;
+            function updateInputValues(inputElement, yearValueElement) {
                 inputElement.setAttribute("min", minYear);
                 inputElement.setAttribute("max", maxYear);
+                inputElement.value = maxYear;
+                yearValueElement.innerHTML = formatYear(minYear < 0, maxYear);
             }
 
             window.onload = function () { setTimeout(function() {
-                changeToRandomYear();
-
                 const hardModeLabelElement = document.getElementById("hard-mode-label");
-                const hardModeText = HARD_MIN_YEAR < 0 ? `${Math.abs(HARD_MIN_YEAR)} B.C.` : HARD_MIN_YEAR;
+
+                const hardModeText = formatYear(HARD_MIN_YEAR < 0, HARD_MIN_YEAR);
                 hardModeLabelElement.innerHTML = `Hard Mode (${hardModeText} to present)`;
                 const difficultyCheckboxElement = document.getElementById("hard-mode");
                 const buttonElement = document.getElementById("guess-button");
                 const inputElement = document.getElementById("year-input");
-                updateInputValues(inputElement);
+                const yearValueElement = document.getElementById("year-value");
+                updateInputValues(inputElement, yearValueElement);
+
+                inputElement.oninput = (event) => {
+                    yearValueElement.innerHTML = formatYear(minYear < 0, event.target.value);
+                }
+
+                changeToRandomYear();
 
                 buttonElement.onclick = () => {
                     const yearGuess = inputElement.value;
+                    const yearAnswerFormatted = formatYear(minYear < 0, yearAnswer);
 
-                    alert(`You guessed ${yearGuess}. The correct answer was ${yearAnswer}.`);
-                    inputElement.value = null;
+                    if (yearGuess == yearAnswer) {
+                        alert(`Correct! The answer was ${yearAnswerFormatted}.`)
+                    }
+                    else {
+                        alert(`Sorry! You guessed ${yearValueElement.innerHTML}. The correct answer was ${yearAnswerFormatted}.`);
+                    }
+
+                    updateInputValues(inputElement, yearValueElement);
 
                     changeToRandomYear();
                 };
@@ -110,8 +142,7 @@
 
                     minYear = hardMode ? HARD_MIN_YEAR : EASY_MIN_YEAR;
 
-                    const inputElement = document.getElementById("year-input");
-                    updateInputValues(inputElement);
+                    updateInputValues(inputElement, yearValueElement);
 
                     changeToRandomYear();
                 } 
@@ -120,14 +151,19 @@
             }, 2000);};
         </script>
         <h1>History Guesser</h1>
-        <h2>Settings</h2>
-        <label id="hard-mode-label" for="hard-mode"></label>
-        <input id="hard-mode" type="checkbox"/>
-        <div id="rr-embedded" visibility="hidden"><!-- RR Map will be injected here --></div>
-        <p>Map powered by https://www.runningreality.org/</p>
-        <label for="year-input">Year</label>
-        <input id="year-input" placeholder="Guess a year" type="number">
-        <button id="guess-button" disabled>Submit Guess</button>
+        <div id="loading">Loading...</div>
+        <div id="game-container" style="visibility: hidden">
+            <h2>Settings</h2>
+            <label id="hard-mode-label" for="hard-mode"></label>
+            <input id="hard-mode" type="checkbox"/>
+            <div id="rr-embedded"><!-- RR Map will be injected here --></div>
+            <p>Map powered by https://www.runningreality.org/</p>
+            <label for="year-input">Year</label>
+            <input id="year-input" type="range">
+            <div id="year-value"></div>
+            <br />
+            <button id="guess-button" disabled>Submit Guess</button>
+        </div>
     </body>
 </html>
 

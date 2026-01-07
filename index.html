@@ -7,27 +7,35 @@
         <style>
             .rr-embedded {
                 position: relative;
-                width: 90%;
-                left: 5%;
-                height: 500px;
-                margin: 20px 0px 20px 0px;
-            }
-            .rr-table {
-                position: relative;
-                width: 90% !important;
-                left: 5%;
+                width: calc(100% - 2rem);
+                height: 450px;
+                margin: auto;
             }
             
-            /*Hide unwanted parts of the UI*/
+            /* Hide unwanted parts of the UI */
             #rrmap {inset:0px !important;top:0px;}
             #rrtimeline {display:none !important;}
             #rrsidebar {display:none;}
             .ol-location-control {display: none;}
             #jAROpen{display:none;}
+
+            /* Undo extra CSS from running reality */
+            #year-input {
+                width: 300px;
+            }
+
+            #hard-mode {
+                position: static;
+                left: auto;
+                visibility: visible;
+            }
         </style>
     </head>
     <body>
         <script>
+            const EASY_MIN_YEAR = 1900;
+            const HARD_MIN_YEAR = -3300;
+
             // Prevent the title from changing which would spoil the answer
             const originalTitle = document.title;
 
@@ -48,7 +56,8 @@
 
             let yearAnswer = 0;
 
-            const minYear = 1900;
+            let hardMode = false;
+            let minYear = EASY_MIN_YEAR;
             const today = new Date();
             const maxYear = today.getFullYear();
 
@@ -67,14 +76,25 @@
                 mapElement.style.visibility = "visible";
             }
 
+            function updateInputValues(inputElement) {
+                const minYearText = minYear < 0 ? `${Math.abs(minYear)} B.C.` : minYear;
+                const maxYearText = maxYear + (minYear < 0 ? " A.D." : "");
+
+                inputElement.placeholder = `Guess a year (${minYearText} to ${maxYearText})`;
+                inputElement.setAttribute("min", minYear);
+                inputElement.setAttribute("max", maxYear);
+            }
+
             window.onload = function () { setTimeout(function() {
                 changeToRandomYear();
 
+                const hardModeLabelElement = document.getElementById("hard-mode-label");
+                const hardModeText = HARD_MIN_YEAR < 0 ? `${Math.abs(HARD_MIN_YEAR)} B.C.` : HARD_MIN_YEAR;
+                hardModeLabelElement.innerHTML = `Hard Mode (${hardModeText} to present)`;
+                const difficultyCheckboxElement = document.getElementById("hard-mode");
                 const buttonElement = document.getElementById("guess-button");
                 const inputElement = document.getElementById("year-input");
-                inputElement.placeholder = `Guess a year (${minYear}-${maxYear})`;
-                inputElement.setAttribute("min", minYear);
-                inputElement.setAttribute("max", maxYear);
+                updateInputValues(inputElement);
 
                 buttonElement.onclick = () => {
                     const yearGuess = inputElement.value;
@@ -84,11 +104,28 @@
 
                     changeToRandomYear();
                 };
+
+                difficultyCheckboxElement.onchange = (event) => {
+                    hardMode = event.currentTarget.checked;
+
+                    minYear = hardMode ? HARD_MIN_YEAR : EASY_MIN_YEAR;
+
+                    const inputElement = document.getElementById("year-input");
+                    updateInputValues(inputElement);
+
+                    changeToRandomYear();
+                } 
+
                 buttonElement.disabled = false;
             }, 2000);};
         </script>
+        <h1>History Guesser</h1>
+        <h2>Settings</h2>
+        <label id="hard-mode-label" for="hard-mode"></label>
+        <input id="hard-mode" type="checkbox"/>
         <div id="rr-embedded" visibility="hidden"><!-- RR Map will be injected here --></div>
         <p>Map powered by https://www.runningreality.org/</p>
+        <label for="year-input">Year</label>
         <input id="year-input" placeholder="Guess a year" type="number">
         <button id="guess-button" disabled>Submit Guess</button>
     </body>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>History Guesser</title>
+        <script src="https://www.runningreality.org/lib/rr.js"></script>
+        <style>
+            .rr-embedded {
+                position: relative;
+                width: 90%;
+                left: 5%;
+                height: 500px;
+                margin: 20px 0px 20px 0px;
+            }
+            .rr-table {
+                position: relative;
+                width: 90% !important;
+                left: 5%;
+            }
+            
+            /*Hide unwanted parts of the UI*/
+            #rrmap {inset:0px !important;top:0px;}
+            #rrtimeline {display:none !important;}
+            #rrsidebar {display:none;}
+            .ol-location-control {display: none;}
+            #jAROpen{display:none;}
+        </style>
+    </head>
+    <body>
+        <script>
+            // Prevent the title from changing which would spoil the answer
+            const originalTitle = document.title;
+
+            Object.defineProperty(document, "title", {
+                get() {
+                    return originalTitle;
+                },
+                set(value) {
+                    console.warn("Blocked title change to avoid spoiling the answer");
+                }
+            });
+
+            // Prevent changes to the URL which would spoil the answer
+            window.navigation.addEventListener("navigate", (event) => {
+                console.warn("Blocked location change to avoid spoiling the answer");
+                event.preventDefault();
+            })
+
+            let yearAnswer = 0;
+
+            const minYear = 1900;
+            const today = new Date();
+            const maxYear = today.getFullYear();
+
+            function changeToRandomYear() {
+                const mapElement = document.getElementById('rr-embedded');
+                mapElement.style.visibility = "hidden";
+
+                yearAnswer = Math.floor(Math.random() * (maxYear - minYear + 1)) + minYear;
+
+                const day = today.getDate();
+                const month = today.getMonth();
+                const date = `${month}/${day}/${yearAnswer}`;
+
+                rr.setDate(date);
+
+                mapElement.style.visibility = "visible";
+            }
+
+            window.onload = function () { setTimeout(function() {
+                changeToRandomYear();
+
+                const buttonElement = document.getElementById("guess-button");
+                const inputElement = document.getElementById("year-input");
+                inputElement.placeholder = `Guess a year (${minYear}-${maxYear})`;
+                inputElement.setAttribute("min", minYear);
+                inputElement.setAttribute("max", maxYear);
+
+                buttonElement.onclick = () => {
+                    const yearGuess = inputElement.value;
+
+                    alert(`You guessed ${yearGuess}. The correct answer was ${yearAnswer}.`);
+                    inputElement.value = null;
+
+                    changeToRandomYear();
+                };
+                buttonElement.disabled = false;
+            }, 2000);};
+        </script>
+        <div id="rr-embedded" visibility="hidden"><!-- RR Map will be injected here --></div>
+        <p>Map powered by https://www.runningreality.org/</p>
+        <input id="year-input" placeholder="Guess a year" type="number">
+        <button id="guess-button" disabled>Submit Guess</button>
+    </body>
+</html>
+

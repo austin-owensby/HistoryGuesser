@@ -5,29 +5,43 @@
         <title>History Guesser</title>
         <script src="https://www.runningreality.org/lib/rr.js"></script>
         <style>
-            .rr-embedded {
-                position: relative;
-                width: 100%;
-                height: 400px;
-                margin: auto;
+            /* Use flex styling to allow children to grow to fill space */
+            body {
+                display: flex;
+                flex-direction: column;
             }
 
+            /* Center loading in page */
+            #loading {
+                display: flex;
+                flex: 1;
+                align-items: center;
+                justify-content: center;
+                font-size: 4rem;
+            }
+
+            /* Grow game contents to fill available space */
             #game-container {
                 margin: 1rem;
+                display: flex;
+                flex: 1;
+                flex-direction: column;
             }
 
-            #year-input {
-                width: 100%;
+            /* Grow map to fill available space */
+            .rr-embedded {
+                display: flex;
+                flex: 1;
             }
             
-            /* Hide unwanted parts of the UI */
+            /* Hide unwanted parts of the Running Reality UI */
             #rrmap {inset:0px !important;top:0px;}
             #rrtimeline {display:none !important;}
             #rrsidebar {display:none;}
             .ol-location-control {display: none;}
             #jAROpen{display:none;}
 
-            /* Undo extra CSS from running reality */
+            /* Undo extra CSS from Running Reality that we don't want affecting our custom inputs */
             #hard-mode {
                 position: static;
                 left: auto;
@@ -70,6 +84,7 @@
             const maxYear = today.getFullYear();
 
             function formatYear(showSuffix, year) {
+                // Format a date by potentially including the suffix AD and BC
                 if (showSuffix) {
                     return year < 0 ? `${Math.abs(year)} BC` : `${year} AD`;
                 }
@@ -79,34 +94,42 @@
             }
 
             function changeToRandomYear() {
+                // Based on the limits, generate a random year
                 const loadingElement = document.getElementById("loading");
                 const gameElement = document.getElementById("game-container");
-                gameElement.style.visibility = "hidden";
-                loadingElement.style.visibility = "visible";
 
+                // Start loading
+                gameElement.style.display = "none";
+                loadingElement.style.display = "flex";
+
+                // Generate a random year
                 yearAnswer = Math.floor(Math.random() * (maxYear - minYear + 1)) + minYear;
 
                 const day = today.getDate();
                 const month = today.getMonth();
                 const date = `${month}/${day}/${yearAnswer}`;
 
+                // Set the date on the map
                 rr.setDate(date);
 
-                // Wait for the UI to render
-                loadingElement.style.visibility = "hidden";
-                gameElement.style.visibility = "visible";
+                // Stop loading
+                loadingElement.style.display = "none";
+                gameElement.style.display = "flex";
             }
 
             function updateInputValues(inputElement, yearValueElement) {
+                // Set the limits to the input
                 inputElement.setAttribute("min", minYear);
                 inputElement.setAttribute("max", maxYear);
                 inputElement.value = maxYear;
+
+                // Update the input's label
                 yearValueElement.innerHTML = formatYear(minYear < 0, maxYear);
             }
 
             window.onload = function () { setTimeout(function() {
+                // Initialize game
                 const hardModeLabelElement = document.getElementById("hard-mode-label");
-
                 const hardModeText = formatYear(HARD_MIN_YEAR < 0, HARD_MIN_YEAR);
                 hardModeLabelElement.innerHTML = `Hard Mode (${hardModeText} to present)`;
                 const difficultyCheckboxElement = document.getElementById("hard-mode");
@@ -115,13 +138,14 @@
                 const yearValueElement = document.getElementById("year-value");
                 updateInputValues(inputElement, yearValueElement);
 
+                // Bind events on inputs
                 inputElement.oninput = (event) => {
+                    // When the year slider is changed, update the label
                     yearValueElement.innerHTML = formatYear(minYear < 0, event.target.value);
                 }
 
-                changeToRandomYear();
-
                 buttonElement.onclick = () => {
+                    // When the submit answer button is clicked, reveal the answer
                     const yearGuess = inputElement.value;
                     const yearAnswerFormatted = formatYear(minYear < 0, yearAnswer);
 
@@ -134,36 +158,41 @@
 
                     updateInputValues(inputElement, yearValueElement);
 
+                    // Move to a new round
                     changeToRandomYear();
                 };
 
                 difficultyCheckboxElement.onchange = (event) => {
+                    // Handle when the difficulty is toggled
                     hardMode = event.currentTarget.checked;
 
                     minYear = hardMode ? HARD_MIN_YEAR : EASY_MIN_YEAR;
 
                     updateInputValues(inputElement, yearValueElement);
 
+                    // Move to a new round using the new limits of the difficulty
                     changeToRandomYear();
-                } 
+                };
 
-                buttonElement.disabled = false;
+                // Start the game by selecting a year
+                changeToRandomYear();
             }, 2000);};
         </script>
+
         <h1>History Guesser</h1>
         <div id="loading">Loading...</div>
-        <div id="game-container" style="visibility: hidden">
+        <div id="game-container" style="display: none">
             <h2>Settings</h2>
-            <label id="hard-mode-label" for="hard-mode"></label>
-            <input id="hard-mode" type="checkbox"/>
+            <div>
+                <label id="hard-mode-label" for="hard-mode"></label>
+                <input id="hard-mode" type="checkbox"/>
+            </div>
             <div id="rr-embedded"><!-- RR Map will be injected here --></div>
             <p>Map powered by https://www.runningreality.org/</p>
             <label for="year-input">Year</label>
             <input id="year-input" type="range">
             <div id="year-value"></div>
-            <br />
             <button id="guess-button" disabled>Submit Guess</button>
         </div>
     </body>
 </html>
-

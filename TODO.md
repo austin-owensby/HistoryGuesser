@@ -1,4 +1,2 @@
-- Scoring mechanism
-- Practice vs. daily
 - UI/UX
 - Investigate updating map to look closer to a political map

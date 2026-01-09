@@ -173,7 +173,11 @@
             }
 
             function changeYearValue(yearInput, yearInputLabel, change) {
-                const yearValue = Number(yearInput.value) + change;
+                let yearValue = Number(yearInput.value) + change;
+
+                if (yearValue == 0) {
+                    yearValue = change > 0 ? 1 : -1;
+                }
 
                 if (minYear <= yearValue && maxYear >= yearValue) {
                     yearInput.value = yearValue;
@@ -224,7 +228,13 @@
 
                 yearInput.oninput = (event) => {
                     // When the year slider is changed, update the label
-                    yearInputLabel.innerHTML = formatYear(minYear < 0, event.target.value);
+                    if (event.target.value == 0) {
+                        yearInput.value = 1;
+                        yearInputLabel.innerHTML = formatYear(minYear < 0, 1);
+                    }
+                    else {
+                        yearInputLabel.innerHTML = formatYear(minYear < 0, event.target.value);
+                    }
                 }
 
                 subtractTenButton.onclick = () => {

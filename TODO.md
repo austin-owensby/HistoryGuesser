@@ -1,2 +1,1 @@
-- UI/UX
 - Investigate updating map to look closer to a political map

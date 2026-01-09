@@ -5,27 +5,72 @@
         <title>History Guesser</title>
         <script src="https://www.runningreality.org/lib/rr.js"></script>
         <style>
+            :root {
+                --main: #F7F7FF;
+                --accent1: #03045E;
+                --accent2: #B5B682;
+                --accent3: #7C9885;
+            }
+
+            * {
+                color: var(--accent1) !important;
+                font-family: Helvetica Neue, Arial, Helvetica, sans-serif !important;
+            }
+
             body {
                 display: flex;
                 flex-direction: column;
+                background: var(--main) !important;
+                font-size: 16px !important;
+            }
+
+            button {
+                background-color: var(--accent2);
+                width: 10rem;
+                height: 3rem;
+                border-radius: 1rem;
+                font-weight: bold;
             }
 
             #main-menu {
-                margin: auto 1rem;
+                margin: auto;
                 border: 1px solid black;
                 padding: 1rem;
                 border-radius: 1rem;
                 display: flex;
                 flex-direction: column;
                 gap: 1rem;
+                align-items: center;
+                background-color: var(--accent3);
+            }
+
+            dialog {
+                margin: auto;
+                padding: 1rem;
+                border-radius: 1rem;
+                max-width: 800px;
+            }
+
+            #about-dialog p {
+                margin: .5rem;
+            }
+
+            #dialog-contents {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: .5rem;
+            }
+
+            #settings {
+                display: flex;
+                gap: 0.5rem;
             }
 
             #game-container {
-                margin: 1rem;
+                display: none;
                 flex: 1;
                 flex-direction: column;
-                display: none;
-                gap: 0.5rem;
             }
 
             .rr-embedded {
@@ -42,12 +87,47 @@
 
             #year-display button {
                 width: 2rem;
+                height: 2rem;
+                border-radius: 0;
+                background: lightgray;
             }
 
             #attribution {
                 font-style: italic;
-                color: lightgray;
+                color: gray;
                 text-align: right;
+                font-size: .75rem;
+                padding-right: 0.5rem;
+                background-color: var(--accent3);
+            }
+
+            header {
+                display: flex;
+                justify-content: space-between;
+                background-color: var(--accent3);
+                padding: 1rem;
+                align-items: center;
+            }
+
+            footer {
+                display: flex;
+                background-color: var(--accent3);
+                padding: 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            #guess-button {
+                margin: auto;
+            }
+
+            #results-score, #score {
+                font-weight: bold;
+                font-size: 1.5rem;
+            }
+
+            #results {
+                line-height: 1;
             }
             
             /* Hide unwanted parts of the Running Reality UI */
@@ -56,6 +136,7 @@
             #rrsidebar {display:none;}
             .ol-location-control {display: none;}
             #jAROpen{display:none;}
+            #jLoadingIndicator{display: none;}
 
             /* Undo extra CSS from Running Reality that we don't want affecting our custom inputs */
             #hard-mode {
@@ -71,12 +152,25 @@
             p {
                 margin: 0;
             }
+
+            h1 {
+                line-height: normal !important;
+                text-shadow: none;
+                letter-spacing: normal;
+                font-weight: bold !important;
+                font-size: 2em !important;
+                margin: 0;
+            }
         </style>
     </head>
     <body>
         <script>
             const EASY_MIN_YEAR = 1900;
             const HARD_MIN_YEAR = -3300;
+            const ROUNDS = 5;
+            
+            const today = new Date();
+            const maxYear = today.getFullYear();
 
             // Prevent the title from changing which would spoil the answer
             const originalTitle = document.title;
@@ -101,10 +195,9 @@
             let practiceMode = false;
             let hardMode = false;
             let minYear = EASY_MIN_YEAR;
-            const today = new Date();
-            const maxYear = today.getFullYear();
             let round = 0;
             let score = 0;
+            let diffs = [];
 
             let yearAnswer = 0;
 
@@ -118,7 +211,7 @@
                 }
             }
 
-            function startNewRound(yearInput, yearInputLabel, roundLabel) {
+            function startNewRound(yearInput, yearInputLabel) {
                 // Based on the limits, generate a random year
                 updateInputValues(yearInput, yearInputLabel);
 
@@ -148,7 +241,6 @@
                 rr.setDate(date);
 
                 round++;
-                roundLabel.innerHTML = practiceMode ? "" : `Round ${round}/5`;
             }
 
             function updateInputValues(yearInput, yearInputLabel) {
@@ -161,24 +253,28 @@
                 yearInputLabel.innerHTML = formatYear(minYear < 0, maxYear);
             }
 
-            function startGame(yearInput, yearInputLabel, roundLabel, gameContainer, mainMenu, guessButton) {
+            function startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton) {
                 // Start a new game
                 mainMenu.style.display = "none";
                 guessButton.style.visibility = "visible";
                 gameContainer.style.display = "flex";
                 round = 0;
                 score = 0;
+                diffs = [];
 
-                startNewRound(yearInput, yearInputLabel, roundLabel);
+                startNewRound(yearInput, yearInputLabel);
             }
 
             function changeYearValue(yearInput, yearInputLabel, change) {
+                // Update the year input by a set amount
                 let yearValue = Number(yearInput.value) + change;
 
+                // Skip past year 0
                 if (yearValue == 0) {
                     yearValue = change > 0 ? 1 : -1;
                 }
 
+                // Check that the new year is in bounds
                 if (minYear <= yearValue && maxYear >= yearValue) {
                     yearInput.value = yearValue;
                     yearInputLabel.innerHTML = formatYear(minYear < 0, yearValue);
@@ -190,13 +286,18 @@
 
                 // Get elements that will be modified or read
                 const hardModeLabel = document.getElementById("hard-mode-label");
+                const aboutEasyMinYear = document.getElementById("about-easy-min-year");
+                const aboutHardMinYear = document.getElementById("about-hard-min-year");
+                const aboutRounds = document.getElementById("about-rounds");
                 const difficultyCheckbox = document.getElementById("hard-mode");
                 const guessButton = document.getElementById("guess-button");
                 const yearInput = document.getElementById("year-input");
                 const yearInputLabel = document.getElementById("year-value");
                 const practiceButton = document.getElementById("practice-button");
                 const dailyButton = document.getElementById("daily-button");
-                const roundLabel = document.getElementById("round-label");
+                const aboutButton = document.getElementById("about-button");
+                const aboutDialog = document.getElementById("about-dialog");
+                const scoreText = document.getElementById("score");
                 const gameContainer = document.getElementById("game-container");
                 const mainMenu = document.getElementById("main-menu");
                 const exitButton = document.getElementById("exit-button");
@@ -204,22 +305,37 @@
                 const subtractOneButton = document.getElementById("subtract-one-button");
                 const addOneButton = document.getElementById("add-one-button");
                 const addTenButton = document.getElementById("add-ten-button");
+                const resultsDialog = document.getElementById("results-dialog");
+                const resultsScoreText = document.getElementById("results-score");
+                const results = document.getElementById("results");
+                const clipboardButton = document.getElementById("clipboard-button");
 
+                // Update text based on constants
                 const hardModeText = formatYear(HARD_MIN_YEAR < 0, HARD_MIN_YEAR);
                 hardModeLabel.innerHTML = `Hard Mode (${hardModeText} to present)`;
+                aboutHardMinYear.innerHTML = hardModeText;
+                aboutEasyMinYear.innerHTML = formatYear(EASY_MIN_YEAR < 0, EASY_MIN_YEAR);
+                aboutRounds.innerHTML = ROUNDS;
 
                 // Bind events on elements
                 practiceButton.onclick = () => {
                     // Start a game in practice mode
                     practiceMode = true;
-                    startGame(yearInput, yearInputLabel, roundLabel, gameContainer, mainMenu, guessButton);
+                    scoreText.innerHTML = "";
+                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton);
                 };
 
                 dailyButton.onclick = () => {
                     // Start a game in daily mode
                     practiceMode = false;
-                    startGame(yearInput, yearInputLabel, roundLabel, gameContainer, mainMenu, guessButton);
+                    scoreText.innerHTML = "Score: 0";
+                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton);
                 };
+
+                aboutButton.onclick = () => {
+                    // Show the about dialog
+                    aboutDialog.showModal();
+                }
 
                 exitButton.onclick = () => {
                     mainMenu.style.display = "flex";
@@ -262,25 +378,115 @@
                     const yearGuess = yearInput.value;
                     const yearAnswerFormatted = formatYear(minYear < 0, yearAnswer);
 
-                    score += 1000 - 1000 * Math.abs(yearGuess - yearAnswer) / (maxYear - minYear);
+                    const diff = Math.abs(yearGuess - yearAnswer)
+                    const points = Math.round(1000 - 1000 * diff / (maxYear - minYear))
+                    score += points;
+
+                    // Update rounds display
+                    if (!practiceMode) {
+                        scoreText.innerHTML = `Score: ${score}`;
+                        diffs.push(diff);
+                    }
+
+                    let message = '';
 
                     if (yearGuess == yearAnswer) {
-                        alert(`Correct! The answer was ${yearAnswerFormatted}.`)
+                        message += `Correct! The answer was ${yearAnswerFormatted}.`;
+
+                        if (!practiceMode) {
+                            message += `You were rewarded ${points} points for getting it correct.`;
+                        }
                     }
                     else {
-                        alert(`Sorry! You guessed ${yearInputLabel.innerHTML}. The correct answer was ${yearAnswerFormatted}.`);
+                        message += `Sorry! You guessed ${yearInputLabel.innerHTML}, but the correct answer was ${yearAnswerFormatted}.`;
+
+                        if (!practiceMode) {
+                            message += `You were rewarded ${points} points for getting within ${diff} years.`;
+                        }
                     }
 
+                    alert(message);
+
                     // Stop daily mode after 5 rounds
-                    if (!practiceMode && round == 5) {
-                        alert(`Game complete! Score: ${Math.round(score)}`);
+                    if (!practiceMode && round == ROUNDS) {
                         guessButton.style.visibility = "hidden";
+                        resultsScoreText.innerHTML = `Score: ${score}`;
+                        let resultsHTML = "";
+
+                        for (let diff of diffs) {
+                            resultsHTML += "<div>";
+
+                            if (diff > 500) {
+                                resultsHTML += "⬛⬛⬛";
+                            }
+                            else if (diff > 100) {
+                                resultsHTML += "🟨⬛⬛";
+                            }
+                            else if (diff > 50) {
+                                resultsHTML += "🟩⬛⬛";
+                            }
+                            else if (diff > 10) {
+                                resultsHTML += "🟩🟨⬛";
+                            }
+                            else if (diff > 5) {
+                                resultsHTML += "🟩🟩⬛";
+                            }
+                            else if (diff > 1) {
+                                resultsHTML += "🟩🟩🟨";
+                            }
+                            else {
+                                resultsHTML += "🟩🟩🟩";
+                            }
+
+                            resultsHTML += "</div>";
+                        }
+
+                        results.innerHTML = resultsHTML;
+                        resultsDialog.showModal();
                     }
                     else {
                         // Move to a new round
-                        startNewRound(yearInput, yearInputLabel, roundLabel);
+                        startNewRound(yearInput, yearInputLabel);
                     }
                 };
+
+                clipboardButton.onclick = () => {
+                    let clipboardText = `Score: ${score}\n`;
+
+                    for (let diff of diffs) {
+                        if (diff > 500) {
+                            clipboardText += "⬛⬛⬛";
+                        }
+                        else if (diff > 100) {
+                            clipboardText += "🟨⬛⬛";
+                        }
+                        else if (diff > 50) {
+                            clipboardText += "🟩⬛⬛";
+                        }
+                        else if (diff > 10) {
+                            clipboardText += "🟩🟨⬛";
+                        }
+                        else if (diff > 5) {
+                            clipboardText += "🟩🟩⬛";
+                        }
+                        else if (diff > 1) {
+                            clipboardText += "🟩🟩🟨";
+                        }
+                        else {
+                            clipboardText += "🟩🟩🟩";
+                        }
+
+                        clipboardText += "\n";
+                    }
+
+                    clipboardText += `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+
+                    if (hardMode) {
+                        clipboardText += " | Hard Mode"
+                    }
+
+                    navigator.clipboard.writeText(clipboardText);
+                }
 
                 difficultyCheckbox.onchange = (event) => {
                     // Handle when the difficulty is toggled
@@ -291,34 +497,62 @@
             };
         </script>
 
-        <h1>History Guesser</h1>
         <div id="main-menu">
-            <p>Welcome to History Guesser. This game is inspired by posts I've seen on <a href="https://www.reddit.com/r/datemymap/">https://www.reddit.com/r/datemymap/</a> as well as games such as <a href="https://timeguessr.com/">https://timeguessr.com/</a>.</p>
-            <p>In this game you'll be presented with a world map at a specific date. The date ranges from 1900 to today by default, or you can turn the challenge up by enabling hard mode to have dates back to 3300 BC</p>
-            <p>Because historic boundaries change multiple times in a year, the month and day will match today's month and day so that you only have to guess the year.</p>
-            <p>In daily mode you'll have 5 rounds and get a score at the end of it based on how close you were to the correct years. You'll get a new puzzle each day.</p>
-            <p>You can also play practice mode for endless rounds.</p>
+            <h1>History Guesser</h1>
+            <dialog id="about-dialog">
+                <div id="dialog-contents">
+                    <h2>About</h2>
+                    <div>
+                        <p>Welcome to History Guesser. This game is inspired by posts I've seen on <a href="https://www.reddit.com/r/datemymap/">https://www.reddit.com/r/datemymap/</a> as well as games such as <a href="https://timeguessr.com/">https://timeguessr.com/</a>.</p>
+                        <p>In this game you'll be presented with a world map at a specific date. The date ranges from <span id="about-easy-min-year"></span> to today by default, or you can turn the challenge up by enabling hard mode to have dates back to <span id="about-hard-min-year"></span>.</p>
+                        <p>Because historic boundaries change multiple times in a year, the month and day will match today's month and day so that you only have to guess the year.</p>
+                        <p>In daily mode you'll have <span id="about-rounds"></span> rounds and get a score at the end of it based on how close you were to the correct years. You'll get a new puzzle each day.</p>
+                        <p>You can also play practice mode for endless rounds.</p>
+                        <p>Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
+                    </div>
+                    <form method="dialog">
+                        <button>Close</button>
+                    </form>
+                </div>
+            </dialog>
             <button id="daily-button">Daily</button>
             <button id="practice-button">Practice</button>
-            <div>
+            <button id="about-button">About</button>
+            <div id="settings">
                 <label id="hard-mode-label" for="hard-mode">Hard Mode</label>
                 <input id="hard-mode" type="checkbox"/>
             </div>
         </div>
         <div id="game-container">
-            <button id="exit-button">Exit</button>
-            <p id="round-label"></p>
+            <header>
+                <h1>History Guesser</h1>
+                <p id="score"></p>
+                <button id="exit-button">Exit</button>
+            </header>
             <div id="rr-embedded"><!-- RR Map will be injected here --></div>
             <p id="attribution">Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
-            <input id="year-input" type="range">
-            <div id="year-display">
-                <button id="subtract-ten-button">-10</button>
-                <button id="subtract-one-button">-1</button>
-                <div id="year-value"></div>
-                <button id="add-one-button">+1</button>
-                <button id="add-ten-button">+10</button>
-            </div>
-            <button id="guess-button">Submit Guess</button>
+            <footer>
+                <input id="year-input" type="range">
+                <div id="year-display">
+                    <button id="subtract-ten-button">-10</button>
+                    <button id="subtract-one-button">-1</button>
+                    <div id="year-value"></div>
+                    <button id="add-one-button">+1</button>
+                    <button id="add-ten-button">+10</button>
+                </div>
+                <button id="guess-button">Submit Guess</button>
+            </footer>
+            <dialog id="results-dialog">
+                <div id="dialog-contents">
+                    <h2>Results</h2>
+                    <p id="results-score"></p>
+                    <div id="results"></div>
+                    <button id="clipboard-button">Copy to clipboard</button>
+                    <form method="dialog">
+                        <button>Close</button>
+                    </form>
+                </div>
+            </dialog>
         </div>
     </body>
 </html>

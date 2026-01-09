@@ -11,7 +11,7 @@
             }
 
             #main-menu {
-                margin: auto;
+                margin: auto 1rem;
                 border: 1px solid black;
                 padding: 1rem;
                 border-radius: 1rem;
@@ -22,15 +22,32 @@
 
             #game-container {
                 margin: 1rem;
-                display: flex;
                 flex: 1;
                 flex-direction: column;
                 display: none;
+                gap: 0.5rem;
             }
 
             .rr-embedded {
                 display: flex;
                 flex: 1;
+            }
+
+            #year-display {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            #year-display button {
+                width: 2rem;
+            }
+
+            #attribution {
+                font-style: italic;
+                color: lightgray;
+                text-align: right;
             }
             
             /* Hide unwanted parts of the Running Reality UI */
@@ -155,6 +172,15 @@
                 startNewRound(yearInput, yearInputLabel, roundLabel);
             }
 
+            function changeYearValue(yearInput, yearInputLabel, change) {
+                const yearValue = Number(yearInput.value) + change;
+
+                if (minYear <= yearValue && maxYear >= yearValue) {
+                    yearInput.value = yearValue;
+                    yearInputLabel.innerHTML = formatYear(minYear < 0, yearValue);
+                }
+            }
+
             window.onload = function () {
                 // Initialize game
 
@@ -170,11 +196,15 @@
                 const gameContainer = document.getElementById("game-container");
                 const mainMenu = document.getElementById("main-menu");
                 const exitButton = document.getElementById("exit-button");
+                const subtractTenButton = document.getElementById("subtract-ten-button");
+                const subtractOneButton = document.getElementById("subtract-one-button");
+                const addOneButton = document.getElementById("add-one-button");
+                const addTenButton = document.getElementById("add-ten-button");
 
                 const hardModeText = formatYear(HARD_MIN_YEAR < 0, HARD_MIN_YEAR);
                 hardModeLabel.innerHTML = `Hard Mode (${hardModeText} to present)`;
 
-                // Bind events on inputs
+                // Bind events on elements
                 practiceButton.onclick = () => {
                     // Start a game in practice mode
                     practiceMode = true;
@@ -195,6 +225,26 @@
                 yearInput.oninput = (event) => {
                     // When the year slider is changed, update the label
                     yearInputLabel.innerHTML = formatYear(minYear < 0, event.target.value);
+                }
+
+                subtractTenButton.onclick = () => {
+                    // Decrease the year by 10 if valid
+                    changeYearValue(yearInput, yearInputLabel, -10);
+                }
+
+                subtractOneButton.onclick = () => {
+                    // Decrease the year by 1 if valid
+                    changeYearValue(yearInput, yearInputLabel, -1);
+                }
+
+                addOneButton.onclick = () => {
+                    // Increase the year by 1 if valid
+                    changeYearValue(yearInput, yearInputLabel, 1);
+                }
+
+                addTenButton.onclick = () => {
+                    // Increase the year by 10 if valid
+                    changeYearValue(yearInput, yearInputLabel, 10);
                 }
 
                 guessButton.onclick = () => {
@@ -249,10 +299,15 @@
             <button id="exit-button">Exit</button>
             <p id="round-label"></p>
             <div id="rr-embedded"><!-- RR Map will be injected here --></div>
-            <p>Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
-            <label for="year-input">Year</label>
+            <p id="attribution">Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
             <input id="year-input" type="range">
-            <div id="year-value"></div>
+            <div id="year-display">
+                <button id="subtract-ten-button">-10</button>
+                <button id="subtract-one-button">-1</button>
+                <div id="year-value"></div>
+                <button id="add-one-button">+1</button>
+                <button id="add-ten-button">+10</button>
+            </div>
             <button id="guess-button">Submit Guess</button>
         </div>
     </body>

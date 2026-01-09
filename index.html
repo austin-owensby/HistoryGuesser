@@ -466,22 +466,22 @@
                     let clipboardText = `Score: ${score}\n`;
 
                     for (let diff of diffs) {
-                        if (diff > 500) {
+                        if (diff >= 500) {
                             clipboardText += "⬛⬛⬛";
                         }
-                        else if (diff > 100) {
+                        else if (diff >= 100) {
                             clipboardText += "🟨⬛⬛";
                         }
-                        else if (diff > 50) {
+                        else if (diff >= 50) {
                             clipboardText += "🟩⬛⬛";
                         }
-                        else if (diff > 10) {
+                        else if (diff >= 10) {
                             clipboardText += "🟩🟨⬛";
                         }
-                        else if (diff > 5) {
+                        else if (diff >= 5) {
                             clipboardText += "🟩🟩⬛";
                         }
-                        else if (diff > 1) {
+                        else if (diff >= 1) {
                             clipboardText += "🟩🟩🟨";
                         }
                         else {

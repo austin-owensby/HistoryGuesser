@@ -211,7 +211,7 @@
                 }
             }
 
-            function startNewRound(yearInput, yearInputLabel) {
+            function startNewRound(yearInput, yearInputLabel, roundText) {
                 // Based on the limits, generate a random year
                 updateInputValues(yearInput, yearInputLabel);
 
@@ -241,6 +241,7 @@
                 rr.setDate(date);
 
                 round++;
+                roundText.innerHTML = practiceMode ? "" : `Round ${round}/${ROUNDS}`;
             }
 
             function updateInputValues(yearInput, yearInputLabel) {
@@ -253,7 +254,7 @@
                 yearInputLabel.innerHTML = formatYear(minYear < 0, maxYear);
             }
 
-            function startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton) {
+            function startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText) {
                 // Start a new game
                 mainMenu.style.display = "none";
                 guessButton.style.visibility = "visible";
@@ -262,7 +263,7 @@
                 score = 0;
                 diffs = [];
 
-                startNewRound(yearInput, yearInputLabel);
+                startNewRound(yearInput, yearInputLabel, roundText);
             }
 
             function changeYearValue(yearInput, yearInputLabel, change) {
@@ -298,6 +299,7 @@
                 const aboutButton = document.getElementById("about-button");
                 const aboutDialog = document.getElementById("about-dialog");
                 const scoreText = document.getElementById("score");
+                const roundText = document.getElementById("round");
                 const gameContainer = document.getElementById("game-container");
                 const mainMenu = document.getElementById("main-menu");
                 const exitButton = document.getElementById("exit-button");
@@ -322,14 +324,14 @@
                     // Start a game in practice mode
                     practiceMode = true;
                     scoreText.innerHTML = "";
-                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton);
+                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText);
                 };
 
                 dailyButton.onclick = () => {
                     // Start a game in daily mode
                     practiceMode = false;
                     scoreText.innerHTML = "Score: 0";
-                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton);
+                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText);
                 };
 
                 aboutButton.onclick = () => {
@@ -446,7 +448,7 @@
                     }
                     else {
                         // Move to a new round
-                        startNewRound(yearInput, yearInputLabel);
+                        startNewRound(yearInput, yearInputLabel, roundText);
                     }
                 };
 
@@ -526,7 +528,10 @@
         <div id="game-container">
             <header>
                 <h1>History Guesser</h1>
-                <p id="score"></p>
+                <div>
+                    <p id="score"></p>
+                    <p id="round"></p>
+                </div>
                 <button id="exit-button">Exit</button>
             </header>
             <div id="rr-embedded"><!-- RR Map will be injected here --></div>

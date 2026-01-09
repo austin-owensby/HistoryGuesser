@@ -130,6 +130,10 @@
                 line-height: 1;
             }
             
+            #round {
+                text-align: center;
+            }
+            
             /* Hide unwanted parts of the Running Reality UI */
             #rrmap {inset:0px !important;top:0px;}
             #rrtimeline {display:none !important;}
@@ -403,7 +407,13 @@
                         message += `Sorry! You guessed ${yearInputLabel.innerHTML}, but the correct answer was ${yearAnswerFormatted}.`;
 
                         if (!practiceMode) {
-                            message += `You were rewarded ${points} points for getting within ${diff} years.`;
+                            message += `You were rewarded ${points} points for getting within ${diff} year`;
+                            
+                            if (diff > 1) {
+                                message += "s";
+                            }
+                            
+                            message += ".";
                         }
                     }
 

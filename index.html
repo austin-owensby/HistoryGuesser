@@ -334,6 +334,12 @@
                 return "🟩🟩🟩";
             }
 
+            function exitGame(mainMenu, gameContainer) {
+                // Exit back to the main menu
+                mainMenu.style.display = "flex";
+                gameContainer.style.display = "none";
+            }
+
             window.onload = function () {
                 // Initialize game
 
@@ -393,8 +399,7 @@
                 }
 
                 exitButton.onclick = () => {
-                    mainMenu.style.display = "flex";
-                    gameContainer.style.display = "none";
+                    exitGame(mainMenu, gameContainer);
                 };
 
                 yearInput.oninput = (event) => {
@@ -509,6 +514,11 @@
 
                     minYear = hardMode ? HARD_MIN_YEAR : EASY_MIN_YEAR;
                 };
+
+                resultsDialog.onclose = () => {
+                    // When closing the results dialog, exit back to the menu since there's nothing left to do
+                    exitGame(mainMenu, gameContainer);
+                }
             };
         </script>
 
@@ -568,7 +578,7 @@
                     <div id="results"></div>
                     <button id="clipboard-button">Copy to clipboard</button>
                     <form method="dialog">
-                        <button>Close</button>
+                        <button>Exit</button>
                     </form>
                 </div>
             </dialog>

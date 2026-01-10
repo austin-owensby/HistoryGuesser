@@ -2,5 +2,4 @@
   - Adjust opacity of countries
   - Remove details that aren't countries/cultures
 - UI/UX
-   - Finish screen
    - Move between rounds out of alert

@@ -316,19 +316,19 @@
             function getDiffSquares(diff) {
                 // Map a score to a set of squares
                 if (diff >= 500) {
-                    return "⬛️⬛️⬛️";
+                    return "⬛⬛⬛";
                 }
                 if (diff >= 100) {
-                    return "🟨⬛️⬛️";
+                    return "🟨⬛⬛";
                 }
                 if (diff >= 50) {
-                    return "🟩⬛️⬛️";
+                    return "🟩⬛⬛";
                 }
                 if (diff >= 10) {
-                    return "🟩🟨⬛️";
+                    return "🟩🟨⬛";
                 }
                 if (diff >= 5) {
-                    return "🟩🟩⬛️";
+                    return "🟩🟩⬛";
                 }
                 if (diff >= 1) {
                     return "🟩🟩🟨";
@@ -498,10 +498,12 @@
                 };
 
                 clipboardButton.onclick = () => {
-                    let clipboardText = `Score: ${score}\n`;
+                    let clipboardText = `Score: ${score}
+`;
 
                     for (let diff of diffs) {
-                        clipboardText += `${getDiffSquares(diff)}\n`;
+                        clipboardText += `${getDiffSquares(diff)}
+`;
                     }
 
                     clipboardText += `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;

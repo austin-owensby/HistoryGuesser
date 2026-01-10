@@ -133,6 +133,11 @@
             #round {
                 text-align: center;
             }
+
+            #year-value {
+                font-weight: bold;
+                font-size: 1.5rem;
+            }
             
             /* Hide unwanted parts of the Running Reality UI */
             #rrmap {inset:0px !important;top:0px;}
@@ -286,6 +291,29 @@
                 }
             }
 
+            function getDiffSquares(diff) {
+                // Map a score to a set of squares
+                if (diff >= 500) {
+                    return "⬛⬛⬛";
+                }
+                if (diff >= 100) {
+                    return "🟨⬛⬛";
+                }
+                if (diff >= 50) {
+                    return "🟩⬛⬛";
+                }
+                if (diff >= 10) {
+                    return "🟩🟨⬛";
+                }
+                if (diff >= 5) {
+                    return "🟩🟩⬛";
+                }
+                if (diff >= 1) {
+                    return "🟩🟩🟨";
+                }
+                return "🟩🟩🟩";
+            }
+
             window.onload = function () {
                 // Initialize game
 
@@ -426,31 +454,7 @@
                         let resultsHTML = "";
 
                         for (let diff of diffs) {
-                            resultsHTML += "<div>";
-
-                            if (diff >= 500) {
-                                resultsHTML += "⬛⬛⬛";
-                            }
-                            else if (diff >= 100) {
-                                resultsHTML += "🟨⬛⬛";
-                            }
-                            else if (diff >= 50) {
-                                resultsHTML += "🟩⬛⬛";
-                            }
-                            else if (diff >= 10) {
-                                resultsHTML += "🟩🟨⬛";
-                            }
-                            else if (diff >= 5) {
-                                resultsHTML += "🟩🟩⬛";
-                            }
-                            else if (diff >= 1) {
-                                resultsHTML += "🟩🟩🟨";
-                            }
-                            else {
-                                resultsHTML += "🟩🟩🟩";
-                            }
-
-                            resultsHTML += "</div>";
+                            resultsHTML += `<div>${getDiffSquares(diff)}</div>`;
                         }
 
                         results.innerHTML = resultsHTML;
@@ -466,29 +470,7 @@
                     let clipboardText = `Score: ${score}\n`;
 
                     for (let diff of diffs) {
-                        if (diff >= 500) {
-                            clipboardText += "⬛⬛⬛";
-                        }
-                        else if (diff >= 100) {
-                            clipboardText += "🟨⬛⬛";
-                        }
-                        else if (diff >= 50) {
-                            clipboardText += "🟩⬛⬛";
-                        }
-                        else if (diff >= 10) {
-                            clipboardText += "🟩🟨⬛";
-                        }
-                        else if (diff >= 5) {
-                            clipboardText += "🟩🟩⬛";
-                        }
-                        else if (diff >= 1) {
-                            clipboardText += "🟩🟩🟨";
-                        }
-                        else {
-                            clipboardText += "🟩🟩🟩";
-                        }
-
-                        clipboardText += "\n";
+                        clipboardText += `${getDiffSquares(diff)}\n`;
                     }
 
                     clipboardText += `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;

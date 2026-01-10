@@ -270,7 +270,11 @@
                 round++;
                 roundText.innerHTML = practiceMode ? "" : `Round ${round}/${ROUNDS}`;
 
-                loadingOverlay.style.display = "none";
+                const delay = round == 1 ? 2000 : 0;
+
+                // When first starting up the game, give us a second to load the map
+                // We can reasonably depend on the user taking enough time viewing the dialog between rounds to not need a delay
+                setTimeout(() => {loadingOverlay.style.display = "none";}, delay);
             }
 
             function updateInputValues(yearInput, yearInputLabel) {
@@ -370,6 +374,10 @@
                 const results = document.getElementById("results");
                 const clipboardButton = document.getElementById("clipboard-button");
                 const loadingOverlay = document.getElementById("loading-overlay");
+                const roundDialog = document.getElementById("round-dialog");
+                const roundTitle = document.getElementById("round-title");
+                const roundContents = document.getElementById("round-contents");
+                const roundButton = document.getElementById("round-button");
 
                 // Update text based on constants
                 const hardModeText = formatYear(HARD_MIN_YEAR < 0, HARD_MIN_YEAR);
@@ -451,27 +459,30 @@
                     let message = '';
 
                     if (yearGuess == yearAnswer) {
-                        message += `Correct! The answer was ${yearAnswerFormatted}.`;
+                        message += `<p>Correct! The answer was ${yearAnswerFormatted}.</p>`;
 
                         if (!practiceMode) {
-                            message += `You were rewarded ${points} points for getting it correct.`;
+                            message += `<p>You were rewarded ${points} points for getting it correct.</p>`;
                         }
                     }
                     else {
-                        message += `Sorry! You guessed ${yearInputLabel.innerHTML}, but the correct answer was ${yearAnswerFormatted}.`;
+                        message += `<p>Sorry! You guessed ${yearInputLabel.innerHTML}, but the correct answer was ${yearAnswerFormatted}.</p>`;
 
                         if (!practiceMode) {
-                            message += `You were rewarded ${points} points for getting within ${diff} year`;
+                            message += `<p>You were rewarded ${points} points for getting within ${diff} year`;
                             
                             if (diff > 1) {
                                 message += "s";
                             }
                             
-                            message += ".";
+                            message += ".</p>";
                         }
                     }
 
-                    alert(message);
+                    roundTitle.innerHTML = practiceMode ? "Round Results" : `Round ${round} Results`;
+                    roundContents.innerHTML = message;
+                    roundButton.innerHTML = round == ROUNDS && !practiceMode ? "View Results" : "Next Round";
+                    roundDialog.showModal();
 
                     // Stop daily mode after 5 rounds
                     if (!practiceMode && round == ROUNDS) {
@@ -484,11 +495,6 @@
                         }
 
                         results.innerHTML = resultsHTML;
-                        resultsDialog.showModal();
-                    }
-                    else {
-                        // Move to a new round
-                        startNewRound(yearInput, yearInputLabel, roundText, loadingOverlay);
                     }
                 };
 
@@ -514,6 +520,16 @@
 
                     minYear = hardMode ? HARD_MIN_YEAR : EASY_MIN_YEAR;
                 };
+
+                roundDialog.onclose = () => {
+                    if (round == ROUNDS && !practiceMode) {
+                        resultsDialog.showModal();
+                    }
+                    else {
+                        // Move to a new round
+                        startNewRound(yearInput, yearInputLabel, roundText, loadingOverlay);
+                    }
+                }
 
                 resultsDialog.onclose = () => {
                     // When closing the results dialog, exit back to the menu since there's nothing left to do
@@ -571,6 +587,15 @@
                 </div>
                 <button id="guess-button">Submit Guess</button>
             </footer>
+            <dialog id="round-dialog">
+                <div id="dialog-contents">
+                    <h2 id="round-title"></h2>
+                    <div id="round-contents"></div>
+                    <form method="dialog">
+                        <button id="round-button"></button>
+                    </form>
+                </div>
+            </dialog>
             <dialog id="results-dialog">
                 <div id="dialog-contents">
                     <h2>Results</h2>

@@ -315,24 +315,24 @@
             function getDiffSquares(diff) {
                 // Map a score to a set of squares
                 if (diff >= 500) {
-                    return "⬛⬛⬛";
+                    return `⬛⬛⬛`;
                 }
                 if (diff >= 100) {
-                    return "🟨⬛⬛";
+                    return `🟨⬛⬛`;
                 }
                 if (diff >= 50) {
-                    return "🟩⬛⬛";
+                    return `🟩⬛⬛`;
                 }
                 if (diff >= 10) {
-                    return "🟩🟨⬛";
+                    return `🟩🟨⬛`;
                 }
                 if (diff >= 5) {
-                    return "🟩🟩⬛";
+                    return `🟩🟩⬛`;
                 }
                 if (diff >= 1) {
-                    return "🟩🟩🟨";
+                    return `🟩🟩🟨`;
                 }
-                return "🟩🟩🟩";
+                return `🟩🟩🟩`;
             }
 
             function exitGame(mainMenu, gameContainer) {
@@ -560,7 +560,7 @@
                         clipboardText += " | Hard Mode"
                     }
 
-                    navigator.clipboard.writeText(finalText);
+                    navigator.clipboard.writeText(clipboardText);
                 }
 
                 difficultyCheckbox.onchange = (event) => {

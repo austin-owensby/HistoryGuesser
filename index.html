@@ -503,10 +503,10 @@
                     shareText4 = `\n` + getDiffSquares(score)
                     shareText5 = `\n` + getDiffSquares(score)
                         
-                    openText = `Score: ` + 1 + ` ` + score
+                    openText = `Score ` + 1 + ` ` + score
                     finalText = openText + shareText + shareText2 + shareText3 + shareText4 + shareText5
 
-                    let clipboardText = `Score: ${score}\n`;
+                    let clipboardText = `Score ${score}\n`;
 
                     for (let diff of diffs) {
                         clipboardText += `${getDiffSquares(diff)}\n`;
@@ -518,7 +518,7 @@
                         clipboardText += " | Hard Mode"
                     }
 
-                    navigator.clipboard.writeText(finalText);
+                    navigator.clipboard.writeText(clipboardText);
                 }
 
                 difficultyCheckbox.onchange = (event) => {

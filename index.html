@@ -498,12 +498,10 @@
                 };
 
                 clipboardButton.onclick = () => {
-                    let clipboardText = `Score: ${score}
-`;
+                    let clipboardText = `Score: ${score}\n`;
 
                     for (let diff of diffs) {
-                        clipboardText += `${getDiffSquares(diff)}
-`;
+                        clipboardText += `${getDiffSquares(diff)}\n`;
                     }
 
                     clipboardText += `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;

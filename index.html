@@ -497,7 +497,7 @@
                 };
 
                 clipboardButton.onclick = () => {
-                    let clipboardText = `Score\: ${score}\n`;
+                    let clipboardText = `Score = ${score}\n`;
 
                     for (let diff of diffs) {
                         clipboardText += `${getDiffSquares(diff)}\n`;
@@ -542,12 +542,12 @@
                 <div id="dialog-contents">
                     <h2>About</h2>
                     <div>
-                        <p>Welcome to History Guesser. This game is inspired by posts I've seen on <a href="https://www.reddit.com/r/datemymap/" rel="noopener noreferrer">https://www.reddit.com/r/datemymap/</a> as well as games such as <a href="https://timeguessr.com/" rel="noopener noreferrer">https://timeguessr.com/</a>.</p>
+                        <p>Welcome to History Guesser. This game is inspired by posts I've seen on <a href="https://www.reddit.com/r/datemymap/">https://www.reddit.com/r/datemymap/</a> as well as games such as <a href="https://timeguessr.com/">https://timeguessr.com/</a>.</p>
                         <p>In this game you'll be presented with a world map at a specific date. The date ranges from <span id="about-easy-min-year"></span> to today by default, or you can turn the challenge up by enabling hard mode to have dates back to <span id="about-hard-min-year"></span>.</p>
                         <p>Because historic boundaries change multiple times in a year, the month and day will match today's month and day so that you only have to guess the year.</p>
                         <p>In daily mode you'll have <span id="about-rounds"></span> rounds and get a score at the end of it based on how close you were to the correct years. You'll get a new puzzle each day.</p>
                         <p>You can also play practice mode for endless rounds.</p>
-                        <p>Map powered by <a href="https://www.runningreality.org/" rel="noopener noreferrer">https://www.runningreality.org/</a></p>
+                        <p>Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
                     </div>
                     <form method="dialog">
                         <button>Close</button>
@@ -573,7 +573,7 @@
             </header>
             <div id="loading-overlay">Loading...</div>
             <div id="rr-embedded"><!-- RR Map will be injected here --></div>
-            <p id="attribution">Map powered by <a href="https://www.runningreality.org/" rel="noopener noreferrer">https://www.runningreality.org/</a></p>
+            <p id="attribution">Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
             <footer>
                 <input id="year-input" type="range">
                 <div id="year-display">

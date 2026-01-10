@@ -4,3 +4,4 @@
 - UI/UX
    - Finish screen
    - Move between rounds out of alert
+- Test on mobile

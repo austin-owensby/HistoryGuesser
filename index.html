@@ -497,13 +497,13 @@
                 };
 
                 clipboardButton.onclick = () => {
-                    shareText = getDiffSquares(score) + getDiffSquares(score)
-                    shareText2 = `\n` + getDiffSquares(score) + getDiffSquares(score)
-                    shareText3 = `\n` + getDiffSquares(score) + getDiffSquares(score)
-                    shareText4 = `\n` + getDiffSquares(score) + getDiffSquares(score)
-                    shareText5 = `\n` + getDiffSquares(score) + getDiffSquares(score)
+                    shareText = getDiffSquares(score)
+                    shareText2 = `\n` + getDiffSquares(score)
+                    shareText3 = `\n` + getDiffSquares(score)
+                    shareText4 = `\n` + getDiffSquares(score)
+                    shareText5 = `\n` + getDiffSquares(score)
                         
-                    finalText = shareText + shareText2 + shareText3 + shareText4 + shareText5
+                    finalText = `Score: ${score}\n` + shareText + shareText2 + shareText3 + shareText4 + shareText5
 
                     let clipboardText = `Score: ${score}\n`;
 

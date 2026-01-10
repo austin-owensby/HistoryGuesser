@@ -534,15 +534,15 @@
                     }
                         
                     shareText = `
-                    ` + calcGeo(score) + calcTime(score)
+                    ` + getDiffSquares(score) + getDiffSquares(score)
                     shareText2 = `
-                    ` + calcGeo(score) + calcTime(score)
+                    ` + getDiffSquares(score) + getDiffSquares(score)
                     shareText3 = `
-                    ` + calcGeo(score) + calcTime(score)
+                    ` + getDiffSquares(score) + getDiffSquares(score)
                     shareText4 = `
-                    ` + calcGeo(score) + calcTime(score)
+                    ` + getDiffSquares(score) + getDiffSquares(score)
                     shareText5 = `
-                    ` + calcGeo(score) + calcTime(score) + `
+                    ` + getDiffSquares(score) + getDiffSquares(score) + `
                     https://timeguessr.com`
                         
                     openText = `TimeGuessr #` + 1 + ` ` + score + `/50,000`
@@ -560,7 +560,7 @@
                         clipboardText += " | Hard Mode"
                     }
 
-                    navigator.clipboard.writeText(clipboardText);
+                    navigator.clipboard.writeText(finalText);
                 }
 
                 difficultyCheckbox.onchange = (event) => {

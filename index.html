@@ -50,6 +50,8 @@
                 padding: 1rem;
                 border-radius: 1rem;
                 max-width: 800px;
+                background-color: var(--main);
+                border: 1px solid var(--accent1);
             }
 
             #about-dialog p {
@@ -74,7 +76,7 @@
                 flex-direction: column;
             }
 
-            .rr-embedded {
+            #rr-embedded {
                 display: flex;
                 flex: 1;
             }
@@ -95,7 +97,6 @@
 
             #attribution {
                 font-style: italic;
-                color: gray;
                 text-align: right;
                 font-size: .75rem;
                 padding-right: 0.5rem;
@@ -268,13 +269,9 @@
                 rr.setDate(date);
 
                 round++;
-                roundText.innerHTML = practiceMode ? "" : `Round ${round}/${ROUNDS}`;
+                roundText.innerText = practiceMode ? "" : `Round ${round}/${ROUNDS}`;
 
-                const delay = round == 1 ? 2000 : 0;
-
-                // When first starting up the game, give us a second to load the map
-                // We can reasonably depend on the user taking enough time viewing the dialog between rounds to not need a delay
-                setTimeout(() => {loadingOverlay.style.display = "none";}, delay);
+                setTimeout(() => {loadingOverlay.style.display = "none";}, 1000);
             }
 
             function updateInputValues(yearInput, yearInputLabel) {
@@ -284,7 +281,7 @@
                 yearInput.value = maxYear;
 
                 // Update the input's label
-                yearInputLabel.innerHTML = formatYear(minYear < 0, maxYear);
+                yearInputLabel.innerText = formatYear(minYear < 0, maxYear);
             }
 
             function startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText, loadingOverlay) {
@@ -304,14 +301,14 @@
                 let yearValue = Number(yearInput.value) + change;
 
                 // Skip past year 0
-                if (yearValue == 0) {
+                if (yearValue === 0) {
                     yearValue = change > 0 ? 1 : -1;
                 }
 
                 // Check that the new year is in bounds
                 if (minYear <= yearValue && maxYear >= yearValue) {
                     yearInput.value = yearValue;
-                    yearInputLabel.innerHTML = formatYear(minYear < 0, yearValue);
+                    yearInputLabel.innerText = formatYear(minYear < 0, yearValue);
                 }
             }
 
@@ -381,23 +378,23 @@
 
                 // Update text based on constants
                 const hardModeText = formatYear(HARD_MIN_YEAR < 0, HARD_MIN_YEAR);
-                hardModeLabel.innerHTML = `Hard Mode (${hardModeText} to present)`;
-                aboutHardMinYear.innerHTML = hardModeText;
-                aboutEasyMinYear.innerHTML = formatYear(EASY_MIN_YEAR < 0, EASY_MIN_YEAR);
-                aboutRounds.innerHTML = ROUNDS;
+                hardModeLabel.innerText = `Hard Mode (${hardModeText} to present)`;
+                aboutHardMinYear.innerText = hardModeText;
+                aboutEasyMinYear.innerText = formatYear(EASY_MIN_YEAR < 0, EASY_MIN_YEAR);
+                aboutRounds.innerText = ROUNDS;
 
                 // Bind events on elements
                 practiceButton.onclick = () => {
                     // Start a game in practice mode
                     practiceMode = true;
-                    scoreText.innerHTML = "";
+                    scoreText.innerText = "";
                     startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText, loadingOverlay);
                 };
 
                 dailyButton.onclick = () => {
                     // Start a game in daily mode
                     practiceMode = false;
-                    scoreText.innerHTML = "Score: 0";
+                    scoreText.innerText = "Score: 0";
                     startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText, loadingOverlay);
                 };
 
@@ -412,12 +409,13 @@
 
                 yearInput.oninput = (event) => {
                     // When the year slider is changed, update the label
-                    if (event.target.value == 0) {
+                    const yearValue = Number(event.target.value);
+                    if (yearValue === 0) {
                         yearInput.value = 1;
-                        yearInputLabel.innerHTML = formatYear(minYear < 0, 1);
+                        yearInputLabel.innerText = formatYear(minYear < 0, 1);
                     }
                     else {
-                        yearInputLabel.innerHTML = formatYear(minYear < 0, event.target.value);
+                        yearInputLabel.innerText = formatYear(minYear < 0, yearValue);
                     }
                 }
 
@@ -443,51 +441,51 @@
 
                 guessButton.onclick = () => {
                     // When the submit answer button is clicked, reveal the answer
-                    const yearGuess = yearInput.value;
+                    const yearGuess = Number(yearInput.value);
                     const yearAnswerFormatted = formatYear(minYear < 0, yearAnswer);
 
-                    const diff = Math.abs(yearGuess - yearAnswer)
-                    const points = Math.round(1000 - 1000 * diff / (maxYear - minYear))
+                    const diff = Math.abs(yearGuess - yearAnswer);
+                    const points = Math.round(1000 - 1000 * diff / (maxYear - minYear));
                     score += points;
 
                     // Update rounds display
                     if (!practiceMode) {
-                        scoreText.innerHTML = `Score: ${score}`;
+                        scoreText.innerText = `Score: ${score}`;
                         diffs.push(diff);
                     }
 
-                    let message = '';
+                    let messageHTML = '';
 
-                    if (yearGuess == yearAnswer) {
-                        message += `<p>Correct! The answer was ${yearAnswerFormatted}.</p>`;
+                    if (yearGuess === yearAnswer) {
+                        messageHTML += `<p>Correct! The answer was ${yearAnswerFormatted}.</p>`;
 
                         if (!practiceMode) {
-                            message += `<p>You were rewarded ${points} points for getting it correct.</p>`;
+                            messageHTML += `<p>You were rewarded ${points} points for getting it correct.</p>`;
                         }
                     }
                     else {
-                        message += `<p>Sorry! You guessed ${yearInputLabel.innerHTML}, but the correct answer was ${yearAnswerFormatted}.</p>`;
+                        messageHTML += `<p>Sorry! You guessed ${yearInputLabel.innerHTML}, but the correct answer was ${yearAnswerFormatted}.</p>`;
 
                         if (!practiceMode) {
-                            message += `<p>You were rewarded ${points} points for getting within ${diff} year`;
+                            messageHTML += `<p>You were rewarded ${points} points for getting within ${diff} year`;
                             
                             if (diff > 1) {
-                                message += "s";
+                                messageHTML += "s";
                             }
                             
-                            message += ".</p>";
+                            messageHTML += ".</p>";
                         }
                     }
 
-                    roundTitle.innerHTML = practiceMode ? "Round Results" : `Round ${round} Results`;
-                    roundContents.innerHTML = message;
-                    roundButton.innerHTML = round == ROUNDS && !practiceMode ? "View Results" : "Next Round";
+                    roundTitle.innerText = practiceMode ? "Round Results" : `Round ${round} Results`;
+                    roundContents.innerHTML = messageHTML;
+                    roundButton.innerText = round === ROUNDS && !practiceMode ? "View Results" : "Next Round";
                     roundDialog.showModal();
 
                     // Stop daily mode after 5 rounds
-                    if (!practiceMode && round == ROUNDS) {
+                    if (!practiceMode && round === ROUNDS) {
                         guessButton.style.visibility = "hidden";
-                        resultsScoreText.innerHTML = `Score: ${score}`;
+                        resultsScoreText.innerText = `Score: ${score}`;
                         let resultsHTML = "";
 
                         for (let diff of diffs) {
@@ -522,7 +520,7 @@
                 };
 
                 roundDialog.onclose = () => {
-                    if (round == ROUNDS && !practiceMode) {
+                    if (round === ROUNDS && !practiceMode) {
                         resultsDialog.showModal();
                     }
                     else {
@@ -544,12 +542,12 @@
                 <div id="dialog-contents">
                     <h2>About</h2>
                     <div>
-                        <p>Welcome to History Guesser. This game is inspired by posts I've seen on <a href="https://www.reddit.com/r/datemymap/">https://www.reddit.com/r/datemymap/</a> as well as games such as <a href="https://timeguessr.com/">https://timeguessr.com/</a>.</p>
+                        <p>Welcome to History Guesser. This game is inspired by posts I've seen on <a href="https://www.reddit.com/r/datemymap/" rel="noopener noreferrer">https://www.reddit.com/r/datemymap/</a> as well as games such as <a href="https://timeguessr.com/" rel="noopener noreferrer">https://timeguessr.com/</a>.</p>
                         <p>In this game you'll be presented with a world map at a specific date. The date ranges from <span id="about-easy-min-year"></span> to today by default, or you can turn the challenge up by enabling hard mode to have dates back to <span id="about-hard-min-year"></span>.</p>
                         <p>Because historic boundaries change multiple times in a year, the month and day will match today's month and day so that you only have to guess the year.</p>
                         <p>In daily mode you'll have <span id="about-rounds"></span> rounds and get a score at the end of it based on how close you were to the correct years. You'll get a new puzzle each day.</p>
                         <p>You can also play practice mode for endless rounds.</p>
-                        <p>Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
+                        <p>Map powered by <a href="https://www.runningreality.org/" rel="noopener noreferrer">https://www.runningreality.org/</a></p>
                     </div>
                     <form method="dialog">
                         <button>Close</button>
@@ -575,7 +573,7 @@
             </header>
             <div id="loading-overlay">Loading...</div>
             <div id="rr-embedded"><!-- RR Map will be injected here --></div>
-            <p id="attribution">Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
+            <p id="attribution">Map powered by <a href="https://www.runningreality.org/" rel="noopener noreferrer">https://www.runningreality.org/</a></p>
             <footer>
                 <input id="year-input" type="range">
                 <div id="year-display">

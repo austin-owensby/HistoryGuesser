@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>History Guesser</title>
         <script src="https://www.runningreality.org/lib/rr.js"></script>
@@ -316,24 +315,24 @@
             function getDiffSquares(diff) {
                 // Map a score to a set of squares
                 if (diff >= 500) {
-                    return "\u2B1B\u2B1B\u2B1B";
+                    return "⬛⬛⬛";
                 }
                 if (diff >= 100) {
-                    return "\u{1F7E8}\u2B1B\u2B1B";
+                    return "🟨⬛⬛";
                 }
                 if (diff >= 50) {
-                    return "\u{1F7E9}\u2B1B\u2B1B";
+                    return "🟩⬛⬛";
                 }
                 if (diff >= 10) {
-                    return "\u{1F7E9}\u{1F7E8}\u2B1B";
+                    return "🟩🟨⬛";
                 }
                 if (diff >= 5) {
-                    return "\u{1F7E9}\u{1F7E9}\u2B1B";
+                    return "🟩🟩⬛";
                 }
                 if (diff >= 1) {
-                    return "\u{1F7E9}\u{1F7E9}\u{1F7E8}";
+                    return "🟩🟩🟨";
                 }
-                return "\u{1F7E9}\u{1F7E9}\u{1F7E9}";
+                return "🟩🟩🟩";
             }
 
             function exitGame(mainMenu, gameContainer) {

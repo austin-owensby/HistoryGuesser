@@ -138,6 +138,20 @@
                 font-weight: bold;
                 font-size: 1.5rem;
             }
+
+            #loading-overlay {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+                z-index: 1;
+                text-align: center;
+                background-color: rgba(0, 0, 0, 30%);
+                font-size: 2rem;
+                align-self: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
             
             /* Hide unwanted parts of the Running Reality UI */
             #rrmap {inset:0px !important;top:0px;}
@@ -220,7 +234,9 @@
                 }
             }
 
-            function startNewRound(yearInput, yearInputLabel, roundText) {
+            function startNewRound(yearInput, yearInputLabel, roundText, loadingOverlay) {
+                loadingOverlay.style.display = "flex";
+
                 // Based on the limits, generate a random year
                 updateInputValues(yearInput, yearInputLabel);
 
@@ -251,6 +267,8 @@
 
                 round++;
                 roundText.innerHTML = practiceMode ? "" : `Round ${round}/${ROUNDS}`;
+
+                loadingOverlay.style.display = "none";
             }
 
             function updateInputValues(yearInput, yearInputLabel) {
@@ -263,7 +281,7 @@
                 yearInputLabel.innerHTML = formatYear(minYear < 0, maxYear);
             }
 
-            function startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText) {
+            function startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText, loadingOverlay) {
                 // Start a new game
                 mainMenu.style.display = "none";
                 guessButton.style.visibility = "visible";
@@ -272,7 +290,7 @@
                 score = 0;
                 diffs = [];
 
-                startNewRound(yearInput, yearInputLabel, roundText);
+                startNewRound(yearInput, yearInputLabel, roundText, loadingOverlay);
             }
 
             function changeYearValue(yearInput, yearInputLabel, change) {
@@ -343,6 +361,7 @@
                 const resultsScoreText = document.getElementById("results-score");
                 const results = document.getElementById("results");
                 const clipboardButton = document.getElementById("clipboard-button");
+                const loadingOverlay = document.getElementById("loading-overlay");
 
                 // Update text based on constants
                 const hardModeText = formatYear(HARD_MIN_YEAR < 0, HARD_MIN_YEAR);
@@ -356,14 +375,14 @@
                     // Start a game in practice mode
                     practiceMode = true;
                     scoreText.innerHTML = "";
-                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText);
+                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText, loadingOverlay);
                 };
 
                 dailyButton.onclick = () => {
                     // Start a game in daily mode
                     practiceMode = false;
                     scoreText.innerHTML = "Score: 0";
-                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText);
+                    startGame(yearInput, yearInputLabel, gameContainer, mainMenu, guessButton, roundText, loadingOverlay);
                 };
 
                 aboutButton.onclick = () => {
@@ -462,7 +481,7 @@
                     }
                     else {
                         // Move to a new round
-                        startNewRound(yearInput, yearInputLabel, roundText);
+                        startNewRound(yearInput, yearInputLabel, roundText, loadingOverlay);
                     }
                 };
 
@@ -526,6 +545,7 @@
                 </div>
                 <button id="exit-button">Exit</button>
             </header>
+            <div id="loading-overlay">Loading...</div>
             <div id="rr-embedded"><!-- RR Map will be injected here --></div>
             <p id="attribution">Map powered by <a href="https://www.runningreality.org/">https://www.runningreality.org/</a></p>
             <footer>

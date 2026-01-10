@@ -316,24 +316,24 @@
             function getDiffSquares(diff) {
                 // Map a score to a set of squares
                 if (diff >= 500) {
-                    return "⬛⬛⬛";
+                    return "\u2B1B\u2B1B\u2B1B";
                 }
                 if (diff >= 100) {
-                    return "🟨⬛⬛";
+                    return "\u{1F7E8}\u2B1B\u2B1B";
                 }
                 if (diff >= 50) {
-                    return "🟩⬛⬛";
+                    return "\u{1F7E9}\u2B1B\u2B1B";
                 }
                 if (diff >= 10) {
-                    return "🟩🟨⬛";
+                    return "\u{1F7E9}\u{1F7E8}\u2B1B";
                 }
                 if (diff >= 5) {
-                    return "🟩🟩⬛";
+                    return "\u{1F7E9}\u{1F7E9}\u2B1B";
                 }
                 if (diff >= 1) {
-                    return "🟩🟩🟨";
+                    return "\u{1F7E9}\u{1F7E9}\u{1F7E8}";
                 }
-                return "🟩🟩🟩";
+                return "\u{1F7E9}\u{1F7E9}\u{1F7E9}";
             }
 
             function exitGame(mainMenu, gameContainer) {

@@ -315,24 +315,24 @@
             function getDiffSquares(diff) {
                 // Map a score to a set of squares
                 if (diff >= 500) {
-                    return `🌎⬛️⬛️⬛️ `;
+                    return "⬛⬛⬛";
                 }
                 if (diff >= 100) {
-                    return `🌎🟨⬛️⬛️ `;
+                    return "🟨⬛⬛";
                 }
                 if (diff >= 50) {
-                    return `🌎🟩⬛️⬛️ `;
+                    return "🟩⬛⬛";
                 }
                 if (diff >= 10) {
-                    return `🌎🟩🟨⬛️ `;
+                    return "🟩🟨⬛";
                 }
                 if (diff >= 5) {
-                    return `🌎🟩🟩⬛️ `;
+                    return "🟩🟩⬛";
                 }
                 if (diff >= 1) {
-                    return `🌎🟩🟩🟨 `;
+                    return "🟩🟩🟨";
                 }
-                return `🌎🟩🟩🟩 `;
+                return "🟩🟩🟩";
             }
 
             function exitGame(mainMenu, gameContainer) {
@@ -497,15 +497,6 @@
                 };
 
                 clipboardButton.onclick = () => {
-                    shareText = `\n` + getDiffSquares(score)
-                    shareText2 = `\n` + getDiffSquares(score)
-                    shareText3 = `\n` + getDiffSquares(score)
-                    shareText4 = `\n` + getDiffSquares(score)
-                    shareText5 = `\n` + getDiffSquares(score)
-                        
-                    openText = `Score ` + 1 + ` ` + score
-                    finalText = openText + shareText + shareText2 + shareText3 + shareText4 + shareText5
-
                     let clipboardText = `Score ${score}\n`;
 
                     for (let diff of diffs) {

@@ -497,6 +497,57 @@
                 };
 
                 clipboardButton.onclick = () => {
+                    function calcGeo(score) {
+                        if (score == 5000) {
+                            return `🌎🟩🟩🟩 `
+                        } else if (score < 5000 && score > 4750) {
+                            return `🌎🟩🟩🟨 `
+                        } else if (score <= 4750 && score > 4500) {
+                            return `🌎🟩🟩⬛️ `
+                        } else if (score <= 4500 && score > 4250) {
+                            return `🌎🟩🟨⬛️ `
+                        } else if (score <= 4250 && score > 3500) {
+                            return `🌎🟩⬛️⬛️ `
+                        } else if (score <= 3500 && score > 2500) {
+                            return `🌎🟨⬛️⬛️ `
+                        } else {
+                            return `🌎⬛️⬛️⬛️ `
+                        }
+                    }
+                        
+                    function calcTime(score) {
+                        if (score == 5000) {
+                            return `📅🟩🟩🟩`
+                        } else if (score == 4950 || score == 4800) {
+                            return `📅🟩🟩🟨`
+                        }  else if (score == 4600 || score == 4300) {
+                            return `📅🟩🟩⬛`
+                        } else if (score == 3900 || score == 3400) {
+                            return `📅🟩🟨⬛`
+                        } else if (score == 2500 || score == 2000) {
+                            return `📅🟩⬛⬛`
+                        } else if (score == 1000) {
+                            return `📅🟨⬛️⬛️`
+                        } else {
+                            return `📅⬛️⬛️⬛️`
+                        }
+                    }
+                        
+                    shareText = `
+                    ` + calcGeo(score) + calcTime(score)
+                    shareText2 = `
+                    ` + calcGeo(score) + calcTime(score)
+                    shareText3 = `
+                    ` + calcGeo(score) + calcTime(score)
+                    shareText4 = `
+                    ` + calcGeo(score) + calcTime(score)
+                    shareText5 = `
+                    ` + calcGeo(score) + calcTime(score) + `
+                    https://timeguessr.com`
+                        
+                    openText = `TimeGuessr #` + 1 + ` ` + score + `/50,000`
+                    finalText = openText + shareText + shareText2 + shareText3 + shareText4 + shareText5
+
                     let clipboardText = `Score: ${score}\n`;
 
                     for (let diff of diffs) {
@@ -509,7 +560,7 @@
                         clipboardText += " | Hard Mode"
                     }
 
-                    navigator.clipboard.writeText(clipboardText);
+                    navigator.clipboard.writeText(finalText);
                 }
 
                 difficultyCheckbox.onchange = (event) => {

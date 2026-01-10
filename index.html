@@ -211,12 +211,17 @@
             });
 
             // Prevent changes to the URL which would spoil the answer
-            window.navigation.addEventListener("navigate", (event) => {
-                if (event.destination.sameDocument) {
-                    console.warn("Blocked location change to avoid spoiling the answer");
-                    event.preventDefault();
-                }
-            })
+            if (window.navigation) {
+                window.navigation.addEventListener("navigate", (event) => {
+                    if (event.destination.sameDocument) {
+                        console.warn("Blocked location change to avoid spoiling the answer");
+                        event.preventDefault();
+                    }
+                });
+            }
+            else {
+                // TODO investigate fallback
+            }
 
             let practiceMode = false;
             let hardMode = false;

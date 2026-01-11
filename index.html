@@ -157,12 +157,34 @@
             }
             
             /* Hide unwanted parts of the Running Reality UI */
-            #rrmap {inset:0px !important;top:0px;}
-            #rrtimeline {display:none !important;}
-            #rrsidebar {display:none;}
-            .ol-location-control {display: none;}
-            #jAROpen{display:none;}
-            #jLoadingIndicator{display: none;}
+            #rrmap {
+                inset:0px !important;
+                top:0px;
+            }
+
+            #rrtimeline {
+                display:none !important;
+            }
+
+            #rrsidebar {
+                display:none;
+            }
+
+            .ol-location-control {
+                display: none;
+            }
+
+            #jAROpen {
+                display:none;
+            }
+
+            #jLoadingIndicator {
+                display: none;
+            }
+
+            .ol-attribution {
+                display: none;
+            }
 
             /* Undo extra CSS from Running Reality that we don't want affecting our custom inputs */
             #hard-mode {
@@ -220,7 +242,22 @@
                 });
             }
             else {
-                // TODO investigate fallback
+                // Fall back since window.navigation support has limited support
+                // https://developer.mozilla.org/en-US/docs/Web/API/Navigation/navigate_event#browser_compatibility
+                const originalURL = location.href;
+                window.addEventListener("hashchange", (event) => {
+                    history.replaceState(null, "", originalURL);
+                    event.preventDefault();
+                    console.warn("Blocked location change to avoid spoiling the answer. (Hash Change event listener)");
+                })
+                window.addEventListener("popstate", (event) => {
+                    history.replaceState(null, "", originalURL);
+                    event.preventDefault();
+                    console.warn("Blocked location change to avoid spoiling the answer. (Pop state event listener)");
+                })
+                window.history.pushState = () => {
+                    console.warn("Blocked location change to avoid spoiling the answer (Push state function)");
+                }
             }
 
             let practiceMode = false;

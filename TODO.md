@@ -1,3 +1,2 @@
 - Investigate updating map to look closer to a political map
   - Adjust opacity of countries
-  - Remove details that aren't countries/cultures

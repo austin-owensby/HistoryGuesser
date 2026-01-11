@@ -309,7 +309,7 @@
 
                 // Set the date on the map
                 rr.setDate(date);
-
+                
                 round++;
                 roundText.innerText = practiceMode ? "" : `Round ${round}/${ROUNDS}`;
 
@@ -424,6 +424,12 @@
                 aboutHardMinYear.innerText = hardModeText;
                 aboutEasyMinYear.innerText = formatYear(EASY_MIN_YEAR < 0, EASY_MIN_YEAR);
                 aboutRounds.innerText = ROUNDS;
+
+                // Remove the layer with extra icons
+                setTimeout(() => {
+                    const layers = rr.map.getLayers();
+                    rr.map.removeLayer(layers.array_[9])
+                }, 2000);
 
                 // Bind events on elements
                 practiceButton.onclick = () => {

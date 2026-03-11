@@ -512,7 +512,16 @@
                         }
                     }
                     else {
-                        messageHTML += `<p>Sorry! You guessed ${yearInputLabel.innerHTML}, but the correct answer was ${yearAnswerFormatted}.</p>`;
+                        messageHTML += "<p>";
+
+                        if (diff < 10) {
+                            messageHTML += "So Close!";
+                        }
+                        else {
+                            messageHTML += "Sorry!";
+                        }
+
+                        messageHTML += ` You guessed ${yearInputLabel.innerHTML}, but the correct answer was ${yearAnswerFormatted}.</p>`;
 
                         if (!practiceMode) {
                             messageHTML += `<p>You were rewarded ${points} points for getting within ${diff} year`;
